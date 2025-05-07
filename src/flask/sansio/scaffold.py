@@ -6,14 +6,16 @@ import pathlib
 import sys
 import typing as t
 from collections import defaultdict
-from functools import update_wrapper
+from functools import update_wrapper, wraps
 
 from jinja2 import BaseLoader
 from jinja2 import FileSystemLoader
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 from werkzeug.utils import cached_property
-
+# Rate limiter implement by hilal
+from ..globals import request
+from ..rate_limiter import RateLimiter
 from .. import typing as ft
 from ..helpers import get_root_path
 from ..templating import _default_template_ctx_processor
@@ -80,6 +82,10 @@ class Scaffold:
         template_folder: str | os.PathLike[str] | None = None,
         root_path: str | None = None,
     ):
+        
+        #  Rate limiter 
+        self.rate_limiter = RateLimiter()
+
         #: The name of the package or module that this object belongs
         #: to. Do not change this once it is set by the constructor.
         self.import_name = import_name
@@ -332,6 +338,30 @@ class Scaffold:
         """
         return self._method_route("PATCH", rule, options)
 
+
+    @setupmethod
+    def rate_limit(self, requests: int, window: int):
+        """
+        A decorator that limits the number of requests a client can make in a given time window.
+    
+        :param requests: Maximum number of requests allowed in the window
+        :param window: Time window in seconds
+        """
+        import functools
+    
+        def decorator(f):
+            @functools.wraps(f)  # This preserves the original function's metadata
+            def wrapped_function(*args, **kwargs):
+                try:
+                    ip = request.remote_addr  # Get client IP
+                    self.rate_limiter.check_limit(ip, requests, window)
+                    return f(*args, **kwargs)
+                except Exception as e:  # Should be a specific RateLimitExceeded exception from your RateLimiter class
+                # Return a proper response with 429 status
+                    response = {"error": "Rate limit exceeded"}
+                    return response, 429
+            return wrapped_function
+        return decorator
     @setupmethod
     def route(self, rule: str, **options: t.Any) -> t.Callable[[T_route], T_route]:
         """Decorate a view function to register it with the given URL

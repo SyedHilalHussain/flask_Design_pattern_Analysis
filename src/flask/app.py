@@ -53,7 +53,7 @@ from .signals import request_tearing_down
 from .templating import Environment
 from .wrappers import Request
 from .wrappers import Response
-
+from .routing import VersionedRouter
 if t.TYPE_CHECKING:  # pragma: no cover
     from _typeshed.wsgi import StartResponse
     from _typeshed.wsgi import WSGIEnvironment
@@ -258,6 +258,7 @@ class Flask(App):
         # Set the name of the Click group in case someone wants to add
         # the app's commands to another CLI tool.
         self.cli.name = self.name
+        self.versioned_router = VersionedRouter(self)  # Add this line
 
         # Add a static route using the provided static_url_path, static_host,
         # and static_folder if there is a configured static_folder.

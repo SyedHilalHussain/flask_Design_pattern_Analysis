@@ -5,6 +5,7 @@ import typing as t
 from . import typing as ft
 from .globals import current_app
 from .globals import request
+from flask import session, jsonify
 
 F = t.TypeVar("F", bound=t.Callable[..., t.Any])
 
@@ -161,7 +162,7 @@ class MethodView(View):
             "/counter", view_func=CounterAPI.as_view("counter")
         )
     """
-
+    roles: t.ClassVar[dict[str, list[str]] | None] = None
     def __init_subclass__(cls, **kwargs: t.Any) -> None:
         super().__init_subclass__(**kwargs)
 
@@ -180,6 +181,12 @@ class MethodView(View):
                 cls.methods = methods
 
     def dispatch_request(self, **kwargs: t.Any) -> ft.ResponseReturnValue:
+
+        if self.roles and request.method in self.roles:
+            user_role = session.get("user_role", "guest")  # Simulate user role
+            required_roles = self.roles.get(request.method, [])
+            if user_role not in required_roles:
+                return jsonify({"error": "Forbidden: Insufficient role"}), 403
         meth = getattr(self, request.method.lower(), None)
 
         # If the request method is HEAD and we don't have a handler for it

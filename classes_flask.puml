@@ -1,0 +1,348 @@
+@startuml classes_flask
+set namespaceSeparator none
+class "AppContext" as flask.ctx.AppContext {
+  app
+  g
+  url_adapter
+  pop(exc: BaseException | None) -> None
+  push() -> None
+}
+class "AppGroup" as flask.cli.AppGroup {
+  name : str
+  command() -> t.Callable[[t.Callable[..., t.Any]], click.Command]
+  group() -> t.Callable[[t.Callable[..., t.Any]], click.Group]
+}
+class "Blueprint" as flask.blueprints.Blueprint {
+  cli
+  get_send_file_max_age(filename: str | None) -> int | None
+  open_resource(resource: str, mode: str, encoding: str | None) -> t.IO[t.AnyStr]
+  send_static_file(filename: str) -> Response
+}
+class "CertParamType" as flask.cli.CertParamType {
+  name : str
+  path_type : Path
+  convert(value: t.Any, param: click.Parameter | None, ctx: click.Context | None) -> t.Any
+}
+class "Config" as flask.config.Config {
+  root_path : str | os.PathLike[str]
+  from_envvar(variable_name: str, silent: bool) -> bool
+  from_file(filename: str | os.PathLike[str], load: t.Callable[[t.IO[t.Any]], t.Mapping[str, t.Any]], silent: bool, text: bool) -> bool
+  from_mapping(mapping: t.Mapping[str, t.Any] | None) -> bool
+  from_object(obj: object | str) -> None
+  from_prefixed_env(prefix: str) -> bool
+  from_pyfile(filename: str | os.PathLike[str], silent: bool) -> bool
+  get_namespace(namespace: str, lowercase: bool, trim_namespace: bool) -> dict[str, t.Any]
+}
+class "ConfigAttribute" as flask.config.ConfigAttribute {
+  get_converter : t.Callable[[t.Any], T] | None
+}
+class "<color:red>DebugFilesKeyError</color>" as flask.debughelpers.DebugFilesKeyError {
+  msg : str
+}
+class "DefaultJSONProvider" as flask.json.provider.DefaultJSONProvider {
+  compact : bool | None
+  default : t.Callable[[t.Any], t.Any]
+  ensure_ascii : bool
+  mimetype : str
+  sort_keys : bool
+  dumps(obj: t.Any) -> str
+  loads(s: str | bytes) -> t.Any
+  response() -> Response
+}
+class "DispatchingJinjaLoader" as flask.templating.DispatchingJinjaLoader {
+  app : App
+  get_source(environment: BaseEnvironment, template: str) -> tuple[str, str | None, t.Callable[[], bool] | None]
+  list_templates() -> list[str]
+}
+class "EnvironBuilder" as flask.testing.EnvironBuilder {
+  app
+  json_dumps(obj: t.Any) -> str
+}
+class "Environment" as flask.templating.Environment {
+  app : App
+}
+class "EventTracker" as flask.event_tracker.EventTracker {
+  app : NoneType
+  event_recorded
+  clear_events()
+  get_events(event_type)
+  init_app(app)
+  record_event(event_type, data)
+}
+class "Flask" as flask.app.Flask {
+  cli
+  debug
+  default_config : ImmutableDict
+  request_class : type[Request]
+  response_class : type[Response]
+  session_interface
+  app_context() -> AppContext
+  async_to_sync(func: t.Callable[..., t.Coroutine[t.Any, t.Any, t.Any]]) -> t.Callable[..., t.Any]
+  create_jinja_environment() -> Environment
+  create_url_adapter(request: Request | None) -> MapAdapter | None
+  dispatch_request() -> ft.ResponseReturnValue
+  do_teardown_appcontext(exc: BaseException | None) -> None
+  do_teardown_request(exc: BaseException | None) -> None
+  ensure_sync(func: t.Callable[..., t.Any]) -> t.Callable[..., t.Any]
+  finalize_request(rv: ft.ResponseReturnValue | HTTPException, from_error_handler: bool) -> Response
+  full_dispatch_request() -> Response
+  get_send_file_max_age(filename: str | None) -> int | None
+  handle_exception(e: Exception) -> Response
+  handle_http_exception(e: HTTPException) -> HTTPException | ft.ResponseReturnValue
+  handle_user_exception(e: Exception) -> HTTPException | ft.ResponseReturnValue
+  log_exception(exc_info: tuple[type, BaseException, TracebackType] | tuple[None, None, None]) -> None
+  make_default_options_response() -> Response
+  make_response(rv: ft.ResponseReturnValue) -> Response
+  make_shell_context() -> dict[str, t.Any]
+  open_instance_resource(resource: str, mode: str, encoding: str | None) -> t.IO[t.AnyStr]
+  open_resource(resource: str, mode: str, encoding: str | None) -> t.IO[t.AnyStr]
+  preprocess_request() -> ft.ResponseReturnValue | None
+  process_response(response: Response) -> Response
+  raise_routing_exception(request: Request) -> t.NoReturn
+  request_context(environ: WSGIEnvironment) -> RequestContext
+  run(host: str | None, port: int | None, debug: bool | None, load_dotenv: bool) -> None
+  send_static_file(filename: str) -> Response
+  test_cli_runner() -> FlaskCliRunner
+  test_client(use_cookies: bool) -> FlaskClient
+  test_request_context() -> RequestContext
+  update_template_context(context: dict[str, t.Any]) -> None
+  url_for() -> str
+  wsgi_app(environ: WSGIEnvironment, start_response: StartResponse) -> cabc.Iterable[bytes]
+}
+class "FlaskCliRunner" as flask.testing.FlaskCliRunner {
+  app
+  invoke(cli: t.Any, args: t.Any) -> Result
+}
+class "FlaskClient" as flask.testing.FlaskClient {
+  application
+  environ_base : dict
+  preserve_context : bool
+  open() -> TestResponse
+  session_transaction() -> t.Iterator[SessionMixin]
+}
+class "FlaskGroup" as flask.cli.FlaskGroup {
+  create_app : t.Callable[..., Flask] | None
+  load_dotenv : bool
+  set_debug_flag : bool
+  get_command(ctx: click.Context, name: str) -> click.Command | None
+  list_commands(ctx: click.Context) -> list[str]
+  make_context(info_name: str | None, args: list[str], parent: click.Context | None) -> click.Context
+  parse_args(ctx: click.Context, args: list[str]) -> list[str]
+}
+class "<color:red>FormDataRoutingRedirect</color>" as flask.debughelpers.FormDataRoutingRedirect {
+}
+class "JSONProvider" as flask.json.provider.JSONProvider {
+  dump(obj: t.Any, fp: t.IO[str]) -> None
+  {abstract}dumps(obj: t.Any) -> str
+  load(fp: t.IO[t.AnyStr]) -> t.Any
+  {abstract}loads(s: str | bytes) -> t.Any
+  response() -> Response
+}
+class "JSONTag" as flask.json.tag.JSONTag {
+  key : str
+  serializer
+  {abstract}check(value: t.Any) -> bool
+  tag(value: t.Any) -> dict[str, t.Any]
+  {abstract}to_json(value: t.Any) -> t.Any
+  {abstract}to_python(value: t.Any) -> t.Any
+}
+class "MethodView" as flask.views.MethodView {
+  roles : Optional[t.ClassVar[dict[str, list[str]] | None]]
+  dispatch_request() -> ft.ResponseReturnValue
+}
+class "<color:red>NoAppException</color>" as flask.cli.NoAppException {
+}
+class "NullSession" as flask.sessions.NullSession {
+  clear
+  pop
+  popitem
+  setdefault
+  update
+}
+class "PassDict" as flask.json.tag.PassDict {
+  tag
+  check(value: t.Any) -> bool
+  to_json(value: t.Any) -> t.Any
+}
+class "PassList" as flask.json.tag.PassList {
+  tag
+  check(value: t.Any) -> bool
+  to_json(value: t.Any) -> t.Any
+}
+class "RateLimiter" as flask.rate_limiter.RateLimiter {
+  requests : defaultdict
+  check_limit(ip, requests, window)
+}
+class "Request" as flask.wrappers.Request {
+  blueprint
+  blueprints
+  endpoint
+  json_module : Any
+  max_content_length
+  max_form_memory_size
+  max_form_parts
+  routing_exception : HTTPException | None
+  url_rule : Rule | None
+  view_args : dict[str, t.Any] | None
+  on_json_loading_failed(e: ValueError | None) -> t.Any
+}
+class "RequestContext" as flask.ctx.RequestContext {
+  app
+  flashes : list[tuple[str, str]] | None
+  request : Optional[Request]
+  session : SessionMixin | None
+  url_adapter : NoneType
+  copy() -> RequestContext
+  match_request() -> None
+  pop(exc: BaseException | None) -> None
+  push() -> None
+}
+class "Response" as flask.wrappers.Response {
+  autocorrect_location_header : bool
+  default_mimetype : str | None
+  json_module
+  max_cookie_size
+  status
+  status_code
+}
+class "ScriptInfo" as flask.cli.ScriptInfo {
+  app_import_path : str | None
+  create_app : t.Callable[..., Flask] | None
+  data : dict[t.Any, t.Any]
+  load_dotenv_defaults : bool
+  set_debug_flag : bool
+  load_app() -> Flask
+}
+class "SecureCookieSession" as flask.sessions.SecureCookieSession {
+  accessed : bool
+  modified : bool
+  get(key: str, default: t.Any) -> t.Any
+  setdefault(key: str, default: t.Any) -> t.Any
+}
+class "SecureCookieSessionInterface" as flask.sessions.SecureCookieSessionInterface {
+  digest_method : staticmethod
+  key_derivation : str
+  salt : str
+  serializer
+  session_class
+  get_signing_serializer(app: Flask) -> URLSafeTimedSerializer | None
+  open_session(app: Flask, request: Request) -> SecureCookieSession | None
+  save_session(app: Flask, session: SessionMixin, response: Response) -> None
+}
+class "SeparatedPathType" as flask.cli.SeparatedPathType {
+  convert(value: t.Any, param: click.Parameter | None, ctx: click.Context | None) -> t.Any
+}
+class "SessionInterface" as flask.sessions.SessionInterface {
+  null_session_class
+  pickle_based : bool
+  get_cookie_domain(app: Flask) -> str | None
+  get_cookie_httponly(app: Flask) -> bool
+  get_cookie_name(app: Flask) -> str
+  get_cookie_partitioned(app: Flask) -> bool
+  get_cookie_path(app: Flask) -> str
+  get_cookie_samesite(app: Flask) -> str | None
+  get_cookie_secure(app: Flask) -> bool
+  get_expiration_time(app: Flask, session: SessionMixin) -> datetime | None
+  is_null_session(obj: object) -> bool
+  make_null_session(app: Flask) -> NullSession
+  {abstract}open_session(app: Flask, request: Request) -> SessionMixin | None
+  {abstract}save_session(app: Flask, session: SessionMixin, response: Response) -> None
+  should_set_cookie(app: Flask, session: SessionMixin) -> bool
+}
+class "SessionMixin" as flask.sessions.SessionMixin {
+  accessed : bool
+  modified : bool
+  new : bool
+  permanent
+}
+class "TagBytes" as flask.json.tag.TagBytes {
+  key : str
+  check(value: t.Any) -> bool
+  to_json(value: t.Any) -> t.Any
+  to_python(value: t.Any) -> t.Any
+}
+class "TagDateTime" as flask.json.tag.TagDateTime {
+  key : str
+  check(value: t.Any) -> bool
+  to_json(value: t.Any) -> t.Any
+  to_python(value: t.Any) -> t.Any
+}
+class "TagDict" as flask.json.tag.TagDict {
+  key : str
+  check(value: t.Any) -> bool
+  to_json(value: t.Any) -> t.Any
+  to_python(value: t.Any) -> t.Any
+}
+class "TagMarkup" as flask.json.tag.TagMarkup {
+  key : str
+  check(value: t.Any) -> bool
+  to_json(value: t.Any) -> t.Any
+  to_python(value: t.Any) -> t.Any
+}
+class "TagTuple" as flask.json.tag.TagTuple {
+  key : str
+  check(value: t.Any) -> bool
+  to_json(value: t.Any) -> t.Any
+  to_python(value: t.Any) -> t.Any
+}
+class "TagUUID" as flask.json.tag.TagUUID {
+  key : str
+  check(value: t.Any) -> bool
+  to_json(value: t.Any) -> t.Any
+  to_python(value: t.Any) -> t.Any
+}
+class "TaggedJSONSerializer" as flask.json.tag.TaggedJSONSerializer {
+  default_tags : list
+  order : list[JSONTag]
+  tags : dict[str, JSONTag]
+  dumps(value: t.Any) -> str
+  loads(value: str) -> t.Any
+  register(tag_class: type[JSONTag], force: bool, index: int | None) -> None
+  tag(value: t.Any) -> t.Any
+  untag(value: dict[str, t.Any]) -> t.Any
+}
+class "<color:red>UnexpectedUnicodeError</color>" as flask.debughelpers.UnexpectedUnicodeError {
+}
+class "View" as flask.views.View {
+  decorators : t.ClassVar[list[t.Callable[..., t.Any]]]
+  init_every_request : t.ClassVar[bool]
+  methods : Optional[t.ClassVar[t.Collection[str] | None]]
+  provide_automatic_options : Optional[t.ClassVar[bool | None]]
+  as_view(name: str) -> ft.RouteCallable
+  {abstract}dispatch_request() -> ft.ResponseReturnValue
+}
+class "_AppCtxGlobals" as flask.ctx._AppCtxGlobals {
+  get(name: str, default: t.Any | None) -> t.Any
+  pop(name: str, default: t.Any) -> t.Any
+  setdefault(name: str, default: t.Any) -> t.Any
+}
+class "newcls" as flask.debughelpers.attach_enctype_error_multidict.newcls {
+}
+flask.cli.FlaskGroup --|> flask.cli.AppGroup
+flask.json.provider.DefaultJSONProvider --|> flask.json.provider.JSONProvider
+flask.json.tag.PassDict --|> flask.json.tag.JSONTag
+flask.json.tag.PassList --|> flask.json.tag.JSONTag
+flask.json.tag.TagBytes --|> flask.json.tag.JSONTag
+flask.json.tag.TagDateTime --|> flask.json.tag.JSONTag
+flask.json.tag.TagDict --|> flask.json.tag.JSONTag
+flask.json.tag.TagMarkup --|> flask.json.tag.JSONTag
+flask.json.tag.TagTuple --|> flask.json.tag.JSONTag
+flask.json.tag.TagUUID --|> flask.json.tag.JSONTag
+flask.sessions.NullSession --|> flask.sessions.SecureCookieSession
+flask.sessions.SecureCookieSession --|> flask.sessions.SessionMixin
+flask.sessions.SecureCookieSessionInterface --|> flask.sessions.SessionInterface
+flask.views.MethodView --|> flask.views.View
+flask.app.Flask --* flask.testing.FlaskClient : application
+flask.cli.AppGroup --* flask.app.Flask : cli
+flask.cli.AppGroup --* flask.blueprints.Blueprint : cli
+flask.ctx._AppCtxGlobals --* flask.ctx.AppContext : g
+flask.json.tag.TaggedJSONSerializer --* flask.sessions.SecureCookieSessionInterface : serializer
+flask.sessions.NullSession --* flask.sessions.SessionInterface : null_session_class
+flask.sessions.SecureCookieSession --* flask.sessions.SecureCookieSessionInterface : session_class
+flask.sessions.SessionInterface --* flask.app.Flask : session_interface
+flask.app.Flask --o flask.ctx.AppContext : app
+flask.app.Flask --o flask.ctx.RequestContext : app
+flask.app.Flask --o flask.testing.EnvironBuilder : app
+flask.app.Flask --o flask.testing.FlaskCliRunner : app
+flask.json.tag.TaggedJSONSerializer --o flask.json.tag.JSONTag : serializer
+@enduml

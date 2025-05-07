@@ -49,3 +49,11 @@ request: Request = LocalProxy(  # type: ignore[assignment]
 session: SessionMixin = LocalProxy(  # type: ignore[assignment]
     _cv_request, "session", unbound_message=_no_req_msg
 )
+
+
+# Added for context-aware logging extension
+current_logger: t.Any = LocalProxy(  # type: ignore[assignment]
+    _cv_request,
+    "logger",
+    unbound_message="Working outside of request context. Cannot access 'current_logger' without an active request context."
+)

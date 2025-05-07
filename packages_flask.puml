@@ -1,0 +1,129 @@
+@startuml packages_flask
+set namespaceSeparator none
+package "flask" as flask {
+}
+package "flask.__main__" as flask.__main__ {
+}
+package "flask.app" as flask.app {
+}
+package "flask.blueprints" as flask.blueprints {
+}
+package "flask.cli" as flask.cli {
+}
+package "flask.config" as flask.config {
+}
+package "flask.ctx" as flask.ctx {
+}
+package "flask.debughelpers" as flask.debughelpers {
+}
+package "flask.event_tracker" as flask.event_tracker {
+}
+package "flask.globals" as flask.globals {
+}
+package "flask.helpers" as flask.helpers {
+}
+package "flask.json" as flask.json {
+}
+package "flask.json.provider" as flask.json.provider {
+}
+package "flask.json.tag" as flask.json.tag {
+}
+package "flask.logging" as flask.logging {
+}
+package "flask.rate_limiter" as flask.rate_limiter {
+}
+package "flask.sessions" as flask.sessions {
+}
+package "flask.signals" as flask.signals {
+}
+package "flask.templating" as flask.templating {
+}
+package "flask.testing" as flask.testing {
+}
+package "flask.typing" as flask.typing {
+}
+package "flask.views" as flask.views {
+}
+package "flask.wrappers" as flask.wrappers {
+}
+flask --> flask.app
+flask --> flask.blueprints
+flask --> flask.config
+flask --> flask.ctx
+flask --> flask.globals
+flask --> flask.helpers
+flask --> flask.json
+flask --> flask.signals
+flask --> flask.templating
+flask --> flask.wrappers
+flask.__main__ --> flask.cli
+flask.app --> flask.ctx
+flask.app --> flask.debughelpers
+flask.app --> flask.globals
+flask.app --> flask.helpers
+flask.app --> flask.sessions
+flask.app --> flask.signals
+flask.app --> flask.templating
+flask.app --> flask.testing
+flask.app --> flask.typing
+flask.app --> flask.wrappers
+flask.blueprints --> flask.cli
+flask.blueprints --> flask.globals
+flask.blueprints --> flask.helpers
+flask.blueprints --> flask.typing
+flask.cli --> flask.globals
+flask.cli --> flask.helpers
+flask.cli --> flask.typing
+flask.config --> flask.json
+flask.config --> flask.typing
+flask.ctx --> flask.globals
+flask.ctx --> flask.signals
+flask.ctx --> flask.typing
+flask.debughelpers --> flask.blueprints
+flask.debughelpers --> flask.globals
+flask.debughelpers --> flask.typing
+flask.event_tracker --> flask
+flask.event_tracker --> flask.signals
+flask.globals --> flask.typing
+flask.helpers --> flask.globals
+flask.helpers --> flask.signals
+flask.helpers --> flask.typing
+flask.json --> flask.globals
+flask.json --> flask.json.provider
+flask.logging --> flask.globals
+flask.logging --> flask.typing
+flask.sessions --> flask.json.tag
+flask.sessions --> flask.typing
+flask.templating --> flask.debughelpers
+flask.templating --> flask.globals
+flask.templating --> flask.helpers
+flask.templating --> flask.signals
+flask.templating --> flask.typing
+flask.testing --> flask.cli
+flask.testing --> flask.sessions
+flask.testing --> flask.typing
+flask.views --> flask
+flask.views --> flask.globals
+flask.views --> flask.typing
+flask.wrappers --> flask.debughelpers
+flask.wrappers --> flask.globals
+flask.wrappers --> flask.helpers
+flask.wrappers --> flask.typing
+flask.app ..> flask.typing
+flask.blueprints ..> flask.wrappers
+flask.cli ..> flask.app
+flask.ctx ..> flask.app
+flask.ctx ..> flask.sessions
+flask.ctx ..> flask.wrappers
+flask.debughelpers ..> flask.wrappers
+flask.globals ..> flask.app
+flask.globals ..> flask.ctx
+flask.globals ..> flask.sessions
+flask.globals ..> flask.wrappers
+flask.helpers ..> flask.wrappers
+flask.json ..> flask.wrappers
+flask.sessions ..> flask.app
+flask.sessions ..> flask.wrappers
+flask.templating ..> flask.app
+flask.testing ..> flask.app
+@enduml

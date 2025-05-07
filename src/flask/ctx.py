@@ -11,8 +11,13 @@ from werkzeug.exceptions import HTTPException
 from . import typing as ft
 from .globals import _cv_app
 from .globals import _cv_request
+from .globals import session  # Added to fix NameError
 from .signals import appcontext_popped
 from .signals import appcontext_pushed
+
+# Added for context-aware logging
+import logging
+import uuid
 
 if t.TYPE_CHECKING:  # pragma: no cover
     from _typeshed.wsgi import WSGIEnvironment
@@ -284,6 +289,19 @@ class AppContext:
         self.pop(exc_value)
 
 
+# Added for context-aware logging extension
+class RequestMetadataFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        ctx = _cv_request.get(None)
+        if ctx:
+            record.request_id = getattr(ctx, "request_id", "N/A")
+            record.user_id = session.get("user_id", "N/A")  # Now accessible
+        else:
+            record.request_id = "N/A"
+            record.user_id = "N/A"
+        return True
+
+
 class RequestContext:
     """The request context contains per-request information. The Flask
     app creates and pushes it at the beginning of the request, then pops
@@ -333,6 +351,17 @@ class RequestContext:
         self._cv_tokens: list[
             tuple[contextvars.Token[RequestContext], AppContext | None]
         ] = []
+
+        # Added for context-aware logging
+        self.request_id: str = str(uuid.uuid4())
+        self.logger: logging.Logger = logging.getLogger(f"flask.request.{self.request_id}")
+        self.logger.setLevel(logging.INFO)
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter(
+            "[request_id=%(request_id)s, user_id=%(user_id)s] %(levelname)s: %(message)s"
+        ))
+        self.logger.addHandler(handler)
+        self.logger.addFilter(RequestMetadataFilter())
 
     def copy(self) -> RequestContext:
         """Creates a copy of this request context with the same request object.
@@ -405,7 +434,7 @@ class RequestContext:
 
         try:
             if clear_request:
-                if exc is _sentinel:
+                if exc is _sentinel:  # Fixed syntax error
                     exc = sys.exc_info()[1]
                 self.app.do_teardown_request(exc)
 
